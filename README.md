@@ -415,3 +415,441 @@ Conditional formatting dynamically highlights channel performance:
 * Measure conversion performance across marketing channels.
 * Analyze geographic sales distribution across the United Kingdom.
 
+
+
+
+
+
+# Page 2: Conversion Funnel & Session Analytics
+
+## Purpose
+
+The Conversion Funnel & Session Analytics page focuses on understanding customer behavior throughout the online purchasing journey. This page identifies where visitors abandon the funnel, evaluates marketing channel effectiveness, and measures conversion performance across devices, browsers, and campaigns.
+
+The objective is to help Digital Marketing Teams and E-Commerce Managers optimize customer acquisition, improve website conversion rates, and reduce revenue leakage.
+
+---
+
+## Key Performance Indicators
+
+### Total Sessions
+
+Measures the total number of website visits.
+
+```DAX
+Total Sessions =
+COUNTROWS(Fact_Sessions)
+```
+
+### Conversion Rate %
+
+Measures the percentage of sessions that resulted in a completed purchase.
+
+```DAX
+Conversion Rate % =
+DIVIDE(
+    [Converted Sessions],
+    [Total Sessions]
+)
+```
+
+### Bounce Rate %
+
+Measures the percentage of visitors who left the website without meaningful engagement.
+
+```DAX
+Bounce Rate % =
+DIVIDE(
+    [Bounce Sessions],
+    [Total Sessions]
+)
+```
+
+### Cart Abandonment Rate %
+
+Measures the percentage of customers who added products to the cart but did not complete a purchase.
+
+```DAX
+Cart Abandonment Rate % =
+DIVIDE(
+    [Cart Abandonment Sessions],
+    [Added To Cart]
+)
+```
+
+### Return on Ad Spend (ROAS)
+
+Measures revenue generated for every pound spent on marketing.
+
+```DAX
+ROAS =
+DIVIDE(
+    [Total Revenue],
+    [Marketing Spend]
+)
+```
+
+### Cost Per Acquisition (CPA)
+
+Measures the cost required to acquire a single converted customer.
+
+```DAX
+CPA =
+DIVIDE(
+    [Marketing Spend],
+    [Converted Sessions]
+)
+```
+
+---
+
+## Purchase Completion Analysis
+
+The dataset contains two separate dates:
+
+* Session Start Date
+* Purchase Completion Date
+
+A customer may visit the website on one day and return later to complete the purchase.
+
+To analyze completed purchases correctly, an inactive relationship between Fact_Sessions and Dim_Date is activated using USERELATIONSHIP().
+
+```DAX
+Completed Purchases =
+CALCULATE(
+    [Converted Sessions],
+    USERELATIONSHIP(
+        Fact_Sessions[ConversionDateID],
+        Dim_Date[DateID]
+    )
+)
+```
+
+This analysis helps identify successful re-engagement and cart recovery behavior.
+
+---
+
+## Conversion Funnel
+
+The funnel visual tracks customers through the following stages:
+
+1. Website Session
+2. Added To Cart
+3. Reached Checkout
+4. Completed Purchase
+
+The funnel highlights where the highest volume of potential revenue is being lost and helps prioritize optimization efforts.
+
+---
+
+## Marketing Channel Analysis
+
+Marketing performance is analyzed across:
+
+* Google Ads
+* Bing Ads
+* Meta
+* TikTok
+* Email Marketing
+* Referral
+* Organic Search
+
+Metrics include:
+
+* Revenue
+* Conversion Rate
+* ROAS
+* CPA
+
+Conditional formatting is applied dynamically to highlight channel performance:
+
+* Green: ROAS ≥ 5
+* Amber: ROAS between 3 and 5
+* Red: ROAS < 3
+
+---
+
+## Device & Browser Analysis
+
+Customer behavior is segmented by:
+
+### Device Type
+
+* Desktop
+* Mobile
+* Tablet
+
+### Browser
+
+* Chrome
+* Safari
+* Edge
+* Firefox
+
+This analysis identifies platform-specific conversion opportunities and user experience issues.
+
+---
+
+## Campaign Performance
+
+UTM campaign tracking enables comparison of:
+
+* Revenue
+* Conversion Rate
+* Sessions
+* Purchases
+
+This analysis helps identify the highest-performing campaigns and optimize future marketing investments.
+
+---
+
+## Visuals Included
+
+### KPI Cards
+
+* Total Sessions
+* Conversion Rate %
+* Bounce Rate %
+* Cart Abandonment Rate %
+* ROAS
+* CPA
+
+### Funnel Analysis
+
+* Session → Cart → Checkout → Purchase Funnel
+
+### Trend Analysis
+
+* Monthly Purchase Completions
+* Conversion Trend
+
+### Marketing Analysis
+
+* ROAS by Channel
+* CPA by Channel
+* Campaign Performance
+
+### Behavioral Analysis
+
+* Device Performance
+* Browser Performance
+
+---
+
+## Key Business Insights
+
+* Identify the largest points of conversion leakage.
+* Measure campaign effectiveness across channels.
+* Evaluate customer acquisition efficiency.
+* Understand user behavior by device and browser.
+* Improve remarketing and cart recovery strategies.
+* Optimize marketing budget allocation based on ROAS and CPA.
+
+---
+
+# Page 3: Product Performance
+
+## Purpose
+
+The Product Performance page evaluates product profitability, customer value, returns performance, product tags, and customer segments.
+
+This page leverages advanced Power BI modeling techniques including many-to-many relationships, bridge tables, and ranking measures to provide deeper commercial insights.
+
+---
+
+## Product Performance Analysis
+
+Products are evaluated using:
+
+* Revenue
+* Gross Profit
+* Gross Margin %
+* Revenue Rank
+* Margin Rank
+
+Revenue and profitability rankings update dynamically based on report filters, ensuring rankings remain relevant within the selected context.
+
+### Revenue Rank
+
+```DAX
+Product Revenue Rank =
+RANKX(
+    ALLSELECTED(Dim_Product[ProductName]),
+    [Total Revenue],
+    ,
+    DESC,
+    DENSE
+)
+```
+
+### Margin Rank
+
+```DAX
+Product Margin Rank =
+RANKX(
+    ALLSELECTED(Dim_Product[ProductName]),
+    [Gross Margin %],
+    ,
+    DESC,
+    DENSE
+)
+```
+
+---
+
+## Product Tag Analysis
+
+Products can belong to multiple tags simultaneously:
+
+* Premium
+* Bestseller
+* Seasonal
+* Eco-Friendly
+* UK Made
+* New In
+* Gift Suitable
+* Clearance
+
+The analysis uses the Bridge_ProductTag table to correctly allocate revenue across tags without creating duplicate counts.
+
+Model Structure:
+
+Dim_ProductTag → Bridge_ProductTag → Dim_Product → Fact_Orders
+
+Metrics analyzed:
+
+* Revenue by Tag
+* Gross Profit by Tag
+* Return Rate by Tag
+
+---
+
+## Customer Segment Analysis
+
+Customers may belong to multiple behavioral segments:
+
+* High Value
+* Loyalty Member
+* Deal Seeker
+* Gift Buyer
+* Lapsed Customer
+
+The analysis leverages the Bridge_CustomerSegment table to support many-to-many segmentation.
+
+Model Structure:
+
+Dim_CustomerSegment → Bridge_CustomerSegment → Dim_Customer → Fact_Orders
+
+Metrics analyzed:
+
+* Revenue by Segment
+* Gross Profit by Segment
+* Orders by Segment
+
+---
+
+## Returns & Refund Analysis
+
+Returns performance is evaluated using:
+
+* Total Returns
+* Return Rate %
+* Refund Exposure
+* Return Reason Analysis
+
+Common return reasons include:
+
+* Faulty Product
+* Changed Mind
+* Not As Described
+
+This analysis helps identify quality issues, fulfillment challenges, and product risk areas.
+
+---
+
+## Customer Value Analysis
+
+Customer value is calculated at the individual customer level before averaging across groups.
+
+This approach provides a more accurate measure of customer worth than simply dividing revenue by order count.
+
+Metrics include:
+
+### Average Customer Spend
+
+```DAX
+Average Customer Spend =
+AVERAGEX(
+    VALUES(Dim_Customer[CustomerID]),
+    CALCULATE([Total Revenue])
+)
+```
+
+Analysis is performed by:
+
+* Loyalty Tier
+* UK Region
+
+---
+
+## Loyalty Tier Analysis
+
+Customers are segmented into:
+
+* Bronze
+* Silver
+* Gold
+* Platinum
+* Diamond
+
+The report compares average spend across tiers to identify the most valuable customer groups and retention opportunities.
+
+---
+
+## Visuals Included
+
+### KPI Cards
+
+* Products Sold
+* Return Rate %
+* Average Customer Spend
+* Refund Exposure
+
+### Product Analysis
+
+* Product Performance Matrix
+* Revenue Rank
+* Margin Rank
+
+### Tag Analysis
+
+* Revenue by Product Tag
+* Gross Profit by Product Tag
+
+### Segment Analysis
+
+* Revenue by Customer Segment
+* Orders by Customer Segment
+
+### Returns Analysis
+
+* Return Rate by Category
+* Return Reason Breakdown
+* Refund Exposure by Channel
+
+### Customer Value Analysis
+
+* Average Spend by Loyalty Tier
+* Average Spend by Region
+
+---
+
+## Key Business Insights
+
+* Identify the most profitable products and categories.
+* Measure performance of product tags and customer segments.
+* Detect categories with elevated return rates.
+* Evaluate customer lifetime value across regions and loyalty tiers.
+* Understand refund exposure and operational risks.
+* Support product strategy, inventory planning, and retention initiatives.
+* 
