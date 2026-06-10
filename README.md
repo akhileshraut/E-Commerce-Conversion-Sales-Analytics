@@ -852,4 +852,3 @@ The report compares average spend across tiers to identify the most valuable cus
 * Evaluate customer lifetime value across regions and loyalty tiers.
 * Understand refund exposure and operational risks.
 * Support product strategy, inventory planning, and retention initiatives.
-* 
